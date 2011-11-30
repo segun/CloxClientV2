@@ -8,7 +8,7 @@ import cloxclient.Client;
 import cloxclient.helpers.ClientList;
 import cloxclient.models.Message;
 import cloxclient.models.Messages;
-import cloxclient.ui.ChatList;
+import cloxclient.ui.ClientsList;
 //import com.trinisoft.cloxclient.ui.CloxClient;
 //import com.trinisoft.cloxclient.ui.HTMLListModel;
 import java.io.BufferedReader;
@@ -19,7 +19,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,10 +38,21 @@ public class ProtocolHandler extends Thread {
     public static File ackFile;
     ObjectProperty<Object[]> clientNames = new SimpleObjectProperty<Object[]>();
 
-    public ProtocolHandler(Socket socket/**, CloxClient client**/) {
+    public ProtocolHandler(Socket socket/**
+             * , CloxClient client*
+             */
+            ) {
         this.socket = socket;
-        Bindings.bindBidirectional(clientNames, ChatList.clients);
+        Bindings.bindBidirectional(clientNames, ClientsList.clients);
         //this.mclient = client;
+    }
+
+    public void stopThread() {
+        try {
+            socket.close();
+        } catch (Exception e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, null, e);
+        }
     }
 
     private Message parseMessage(String clientMessage) {
@@ -80,16 +94,18 @@ public class ProtocolHandler extends Thread {
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String serverMessage = "";
-                while ((serverMessage = reader.readLine()) != null) {                    
+                while ((serverMessage = reader.readLine()) != null) {
                     if (serverMessage != null) {
-                        if(!serverMessage.startsWith("clients")) {
+                        if (!serverMessage.startsWith("clients")) {
                             //Toolkit.getDefaultToolkit().beep();
                             //mclient.toFront();
                         }
                         if (serverMessage.startsWith("clients")) {
                             serverMessage = serverMessage.replace("clients:", "");
                             updateClientList(serverMessage);
-                            /*UI*/
+                            /*
+                             * UI
+                             */
                             //mclient.btnLogin.setEnabled(false);
                             //mclient.btnDisconnect.setEnabled(true);
                             //mclient.lblStatus.setText("Connected");
@@ -102,20 +118,38 @@ public class ProtocolHandler extends Thread {
                             String message = serverMessage;
 
                             message = message.replace("message:", "");
+
                             Message parsed = parseMessage(message);
-                            Messages.list.add(parsed);
+
+                            int len = 0;
+                            Message[] newMessages = new Message[1];
+
+                            if (Messages.list.get() != null) {
+                                len = Messages.list.get().length;
+                                newMessages = Arrays.copyOf(Messages.list.get(), len + 1);
+                            }
+                            
+                            newMessages[len] = parsed;
+
+                            Messages.list.set(newMessages);
                             /**
-                            mclient.messageList.setCellRenderer(new ListCellRenderer() {
-
-                                public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                                    return new JLabel(value.toString());
-                                }
-                            });
-                            mclient.messageList.setModel(new HTMLListModel(Messages.list));
-                            mclient.messageList.ensureIndexIsVisible(Messages.list.size() - 1);
-                            * */
-                            /*UI*/
-
+                             * mclient.messageList.setCellRenderer(new
+                             * ListCellRenderer() {
+                             *
+                             * public Component
+                             * getListCellRendererComponent(JList list, Object
+                             * value, int index, boolean isSelected, boolean
+                             * cellHasFocus) { return new
+                             * JLabel(value.toString()); } });
+                             * mclient.messageList.setModel(new
+                             * HTMLListModel(Messages.list));
+                             * mclient.messageList.ensureIndexIsVisible(Messages.list.size()
+                             * - 1);
+                             *
+                             */
+                            /*
+                             * UI
+                             */
                         } else if (serverMessage.startsWith("ackfile")) {
                             serverMessage = serverMessage.replace("ackfile:", "");
                             String fp[] = serverMessage.split(":s");
@@ -161,37 +195,36 @@ public class ProtocolHandler extends Thread {
 
                             System.out.println("PORT = " + port + "filename: " + filename + " from = " + from);
                             /**
-                            int retval = JOptionPane.showConfirmDialog(mclient, from + " is trying to send you a file. "
-                                    + "\n FileName: " + filename + "\n Do you want to accept?",
-                                    "Clox Client: File Transfer",
-                                    JOptionPane.YES_NO_CANCEL_OPTION);
-                                    
-                            if (retval == JOptionPane.YES_OPTION) {
-                                JFileChooser fileChooser = new JFileChooser();
-                                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                                fileChooser.setDialogTitle("Please select directory to store file in");
-                                retval = fileChooser.showOpenDialog(mclient);
-                                if (retval == JFileChooser.APPROVE_OPTION) {
-                                    Socket socket1 = new Socket(Client.host, port);
-                                    File f = new File(fileChooser.getSelectedFile(), filename);
-
-                                    FileOutputStream fos = new FileOutputStream(f);
-                                    InputStream is = socket1.getInputStream();
-
-                                    int ch;
-
-                                    while ((ch = is.read()) != -1) {
-                                        fos.write(ch);
-                                    }
-                                    fos.flush();
-                                    fos.close();
-
-                                    JOptionPane.showMessageDialog(mclient,
-                                            "File " + filename + " Saved", "Clox Client : File Transfer",
-                                            JOptionPane.INFORMATION_MESSAGE);
-                                }
-                            }
-                            **/
+                             * int retval =
+                             * JOptionPane.showConfirmDialog(mclient, from + "
+                             * is trying to send you a file. " + "\n FileName: "
+                             * + filename + "\n Do you want to accept?", "Clox
+                             * Client: File Transfer",
+                             * JOptionPane.YES_NO_CANCEL_OPTION);
+                             *
+                             * if (retval == JOptionPane.YES_OPTION) {
+                             * JFileChooser fileChooser = new JFileChooser();
+                             * fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                             * fileChooser.setDialogTitle("Please select
+                             * directory to store file in"); retval =
+                             * fileChooser.showOpenDialog(mclient); if (retval
+                             * == JFileChooser.APPROVE_OPTION) { Socket socket1
+                             * = new Socket(Client.host, port); File f = new
+                             * File(fileChooser.getSelectedFile(), filename);
+                             *
+                             * FileOutputStream fos = new FileOutputStream(f);
+                             * InputStream is = socket1.getInputStream();
+                             *
+                             * int ch;
+                             *
+                             * while ((ch = is.read()) != -1) { fos.write(ch); }
+                             * fos.flush(); fos.close();
+                             *
+                             * JOptionPane.showMessageDialog(mclient, "File " +
+                             * filename + " Saved", "Clox Client : File
+                             * Transfer", JOptionPane.INFORMATION_MESSAGE); } }
+                             *
+                             */
                         } else {
                             System.out.println(serverMessage);
                         }
@@ -200,8 +233,8 @@ public class ProtocolHandler extends Thread {
                     }
                 }
                 Thread.sleep(2000);
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
+            } catch (Exception ioe) {
+                Logger.getAnonymousLogger().log(Level.SEVERE, null, ioe);
                 try {
                     if (!socket.isClosed()) {
                         socket.close();
@@ -210,19 +243,14 @@ public class ProtocolHandler extends Thread {
                     io.printStackTrace();
                 }
                 break;
-            } catch (InterruptedException ie) {
-                ie.printStackTrace();
-                break;
             }
         }
         /**
-        mclient.btnLogin.setEnabled(true);
-        mclient.btnSend.setEnabled(false);
-        mclient.btnDisconnect.setEnabled(false);
-        mclient.lblStatus.setText("Disconnected");
-        Object names[] = new Object[0];
-        mclient.setNames(names);
-        mclient.namesList.setSelectedIndices(new int[0]);
-        * **/
+         * mclient.btnLogin.setEnabled(true); mclient.btnSend.setEnabled(false);
+         * mclient.btnDisconnect.setEnabled(false);
+         * mclient.lblStatus.setText("Disconnected"); Object names[] = new
+         * Object[0]; mclient.setNames(names);
+         * mclient.namesList.setSelectedIndices(new int[0]); *
+         */
     }
 }

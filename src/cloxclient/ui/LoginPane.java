@@ -5,6 +5,8 @@
 package cloxclient.ui;
 
 import cloxclient.Client;
+import cloxclient.CloxClient;
+import cloxclient.models.MessageDisparser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -30,8 +32,8 @@ public class LoginPane implements EventHandler<ActionEvent> {
     Stage primaryStage;
     Stage loginStage = new Stage();
 
-    public LoginPane(final Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public LoginPane() {
+        this.primaryStage = CloxClient.primaryStage;
         init();
     }
 
@@ -43,6 +45,8 @@ public class LoginPane implements EventHandler<ActionEvent> {
         loginStage.initModality(Modality.WINDOW_MODAL);
         loginStage.initOwner(primaryStage);
 
+        loginStage.setTitle("Please Login");
+
         BorderPane mainPane = new BorderPane();
         GridPane centerPane = new GridPane();
         centerPane.setHgap(10);
@@ -51,6 +55,8 @@ public class LoginPane implements EventHandler<ActionEvent> {
 
         centerPane.add(new Label("Username"), 1, 1);
         centerPane.add((usernameField = new TextField("")), 2, 1);
+        
+        usernameField.setOnAction(this);
 
         centerPane.add(new Label("Password"), 1, 2);
         centerPane.add((passwordField = new TextField("")), 2, 2);
@@ -68,23 +74,34 @@ public class LoginPane implements EventHandler<ActionEvent> {
         loginStage.setScene(scene);
 
         loginButton.setOnAction(this);
+        cancelButton.setOnAction(this);
     }
 
     @Override
     public void handle(ActionEvent t) {
-        Button b = (Button) t.getSource();
-        if (b.equals(loginButton)) {
-            final Client client = new Client("segun", null);
+        Button bt = null;
+        TextField tf = null;
+        if(t.getSource() instanceof Button) {
+            bt = (Button) t.getSource();
+        } else {
+            tf = (TextField) t.getSource();
+        }
+        final LoginPane instance = this;
+        if ((bt != null && bt.equals(loginButton)) || tf != null) {
+            final Client client = new Client(usernameField.getText(), null);
             Platform.runLater(new Runnable() {
 
                 @Override
                 public void run() {
                     client.start();
+                    MessageDisparser messageDisparser = new MessageDisparser(primaryStage, client, usernameField.getText());
+                    ClientsList chatList = new ClientsList(usernameField.getText(), client, instance, messageDisparser);
+                    chatList.show();
+                    loginStage.hide();
                 }
-            });            
-            
-            ChatList chatList = new ChatList(primaryStage);
-            chatList.show();
+            });
+        } else if (bt.equals(cancelButton)) {
+            System.exit(0);
         }
     }
 }

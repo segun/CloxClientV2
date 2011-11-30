@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import javafx.application.Platform;
-import javax.swing.text.PlainDocument;
 
 /**
  *
@@ -25,12 +24,18 @@ public class Client extends Thread {
     public static boolean STOP_CLIENT = false;
     public Socket clientSocket;
     public CloxClient client;
+    ProtocolHandler protocolHandler;
 
     public Client(String username, CloxClient client) {
         Client.username = username;
         this.client = client;
         STOP_CLIENT = false;
     }
+
+    public void disconnect() {
+        protocolHandler.stopThread();
+    }
+    
 
     @Override
     public void run() {
@@ -50,7 +55,8 @@ public class Client extends Thread {
 
                     @Override
                     public void run() {
-                        new ProtocolHandler(clientSocket).start();
+                        protocolHandler = new ProtocolHandler(clientSocket);
+                        protocolHandler.start();
                     }
                 });                
                 break;

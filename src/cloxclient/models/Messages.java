@@ -5,12 +5,13 @@
 
 package cloxclient.models;
 
-import java.util.ArrayList;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 /**
  *
  * @author segun
  */
 public class Messages {
-    public static ArrayList<Message> list = new ArrayList<Message>();
+    public static ObjectProperty<Message[]> list = new SimpleObjectProperty<Message[]>();    
 }

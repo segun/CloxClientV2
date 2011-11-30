@@ -14,10 +14,8 @@
     -fx-focus-color: #B6A678;
 }
 
-.button1{
-    -fx-text-fill: #006464;
-    -fx-background-color: #DFB951;
-    -fx-border-radius: 20;
-    -fx-background-radius: 20;
-    -fx-padding: 5;
+
+.my-text {
+    -fx-font-weight: bold;
+    -fx-fill: white;
 }

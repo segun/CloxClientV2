@@ -14,6 +14,8 @@ import javafx.stage.Stage;
  * @author trinisoftinc
  */
 public class CloxClient extends Application {
+    
+    public static Stage primaryStage;
 
     /**
      * @param args the command line arguments
@@ -23,14 +25,14 @@ public class CloxClient extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Clox Login");
+    public void start(Stage primaryStage) {               
+        CloxClient.primaryStage = primaryStage;
         Scene scene = null;
 
         Client.host = "unotifier.com";
         Client.port = 1981;
         
-        new LoginPane(primaryStage).show();
+        new LoginPane().show();
 
         //primaryStage.setScene(scene);
         //primaryStage.show();
