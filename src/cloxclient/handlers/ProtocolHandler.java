@@ -23,6 +23,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lib.MessageDialog;
@@ -101,6 +104,9 @@ public class ProtocolHandler extends Thread {
                             Object[] names = ClientList.clientList.toArray();
                             clientNames.set(names);
                         } else if (serverMessage.startsWith("message")) {
+                            final AudioClip bar1Note =
+                                    new AudioClip(ProtocolHandler.class.getResource("/res/beep.mp3").toString());
+                            bar1Note.play();
                             String message = serverMessage;
 
                             message = message.replace("message:", "");

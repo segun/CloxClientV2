@@ -93,11 +93,10 @@ public class ClientsList implements EventHandler<ActionEvent> {
 
         final VBox clientsPane = new VBox();
         clientsPane.setTranslateY(40);
-        clientsPane.setPrefHeight(540);
+        clientsPane.setPrefHeight(540);       
 
         mainPane.getChildren().add(userPane);
-        mainPane.getChildren().add(clientsPane);
-
+        mainPane.getChildren().add(clientsPane);        
 
         Rectangle2D r2d = Screen.getPrimary().getBounds();
 

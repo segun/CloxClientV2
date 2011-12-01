@@ -94,8 +94,12 @@ public class ChatWindow {
 
         Random random = new Random(System.currentTimeMillis());
 
-        chatWindowStage.setX((random.nextInt() % r2d.getWidth()));
-        chatWindowStage.setY((random.nextInt() % r2d.getHeight()));
+        int randomAdd = random.nextInt() % 50;
+        double centerX = ((r2d.getWidth() - STAGE_W) / 2) + randomAdd;
+        double centerY = ((r2d.getHeight() - STAGE_H) / 2) + randomAdd;                
+        
+        chatWindowStage.setX(centerX);
+        chatWindowStage.setY(centerY);
 
         BorderPane mainPane = new BorderPane();
 
@@ -238,6 +242,6 @@ public class ChatWindow {
     }
 
     public void setClient(Client client) {
-        this.client = client;
+        this.client = client;        
     }
 }

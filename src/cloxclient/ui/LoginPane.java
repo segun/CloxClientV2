@@ -101,12 +101,14 @@ public class LoginPane implements EventHandler<ActionEvent> {
                         messageDisparser = new MessageDisparser(primaryStage, client, usernameField.getText());
                     } else {
                         messageDisparser.setClient(client);
+                        messageDisparser.setMe(usernameField.getText());
                     }
 
                     if (clientsList == null) {
                         clientsList = new ClientsList(usernameField.getText(), client, instance, messageDisparser);
                     } else {
-                        clientsList.client = client;                        
+                        clientsList.client = client; 
+                        clientsList.username = usernameField.getText();
                     }
                     
                     clientsList.show();

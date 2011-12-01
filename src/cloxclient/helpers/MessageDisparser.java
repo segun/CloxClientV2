@@ -83,5 +83,9 @@ public class MessageDisparser implements ChangeListener<Message[]> {
             }
         }
     }
+
+    public void setMe(String me) {
+        this.me = me;
+    }
             
 }
