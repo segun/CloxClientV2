@@ -6,7 +6,7 @@ package cloxclient.ui;
 
 import cloxclient.Client;
 import cloxclient.CloxClient;
-import cloxclient.models.MessageDisparser;
+import cloxclient.helpers.MessageDisparser;
 import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;

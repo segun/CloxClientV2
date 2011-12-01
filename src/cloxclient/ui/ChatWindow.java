@@ -8,12 +8,12 @@ import cloxclient.Client;
 import cloxclient.handlers.Messenger;
 import cloxclient.models.Message;
 import cloxclient.models.Messages;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -26,10 +26,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 /**
  *
@@ -37,7 +34,7 @@ import javafx.stage.WindowEvent;
  */
 public class ChatWindow {
 
-    public static final int STAGE_W = 650;
+    public static final int STAGE_W = 670;
     public static final int STAGE_H = 500;
     ListView<BorderPane> messagesView;
     ScrollPane messagesScrollPane;
@@ -94,8 +91,11 @@ public class ChatWindow {
         chatWindowStage.setTitle("you are chatting with " + toName);
 
         Rectangle2D r2d = Screen.getPrimary().getBounds();
-        chatWindowStage.setX(50);
-        chatWindowStage.setY((r2d.getHeight() - STAGE_H) / 2);
+
+        Random random = new Random(System.currentTimeMillis());
+
+        chatWindowStage.setX((random.nextInt() % r2d.getWidth()));
+        chatWindowStage.setY((random.nextInt() % r2d.getHeight()));
 
         BorderPane mainPane = new BorderPane();
 
@@ -139,17 +139,17 @@ public class ChatWindow {
         innerShadow.setOffsetY(2.0f);
         headerPane.setEffect(innerShadow);
         if (nv.getFrom().equals(me)) {
-            headerPane.getChildren().add(new Rectangle(STAGE_W - 10, 25.0, Color.web("#544504")));
+            headerPane.getChildren().add(new Rectangle(STAGE_W - 20, 25.0, Color.web("#544504")));
         } else {
-            headerPane.getChildren().add(new Rectangle(STAGE_W - 10, 25.0, Color.web("#A78732")));
+            headerPane.getChildren().add(new Rectangle(STAGE_W - 20, 25.0, Color.web("#A78732")));
         }
 
         BorderPane headerContentPane = new BorderPane();
 
-        Text from = new Text("     " + nv.getFrom());
+        Text from = new Text("        " + nv.getFrom());
         from.getStyleClass().add("my-text");
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-        Text date = new Text(format.format(nv.getTime()) + "     ");
+        Text date = new Text(format.format(nv.getTime()) + "        ");
         date.getStyleClass().add("my-text");
 
         headerContentPane.setLeft(from);
@@ -218,6 +218,9 @@ public class ChatWindow {
             Button b = (Button) actionEvent.getSource();
 
             if (b.equals(sendFileButton)) {
+                FileChooser fileChooser = new FileChooser();
+                File f = fileChooser.showOpenDialog(primaryStage);
+                Messenger.sendFile(f, client.clientSocket, toName);
             } else if (b.equals(copySelectedButton)) {
                 Clipboard cp = Clipboard.getSystemClipboard();
                 HashMap<DataFormat, Object> data = new HashMap<DataFormat, Object>();
@@ -232,5 +235,9 @@ public class ChatWindow {
 
             }
         }
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

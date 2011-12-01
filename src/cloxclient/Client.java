@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 
 /**
  *
@@ -23,12 +24,11 @@ public class Client extends Thread {
     public static String username;
     public static boolean STOP_CLIENT = false;
     public Socket clientSocket;
-    public CloxClient client;
     ProtocolHandler protocolHandler;
+    Stage primaryStage;
 
-    public Client(String username, CloxClient client) {
+    public Client(String username, Stage primaryStage) {
         Client.username = username;
-        this.client = client;
         STOP_CLIENT = false;
     }
 
@@ -55,7 +55,7 @@ public class Client extends Thread {
 
                     @Override
                     public void run() {
-                        protocolHandler = new ProtocolHandler(clientSocket);
+                        protocolHandler = new ProtocolHandler(clientSocket, primaryStage);
                         protocolHandler.start();
                     }
                 });                

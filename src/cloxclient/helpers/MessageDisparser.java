@@ -2,9 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package cloxclient.models;
+package cloxclient.helpers;
 
 import cloxclient.Client;
+import cloxclient.models.Message;
+import cloxclient.models.Messages;
 import cloxclient.ui.ChatWindow;
 import java.util.HashMap;
 import javafx.application.Platform;
@@ -71,5 +73,15 @@ public class MessageDisparser implements ChangeListener<Message[]> {
     public void setChats(HashMap<String, ChatWindow> chats) {
         this.chats = chats;
     }
-        
+
+    public void setClient(Client client) {
+        this.client = client;
+        for(String a: chats.keySet()) {
+            ChatWindow w = chats.get(a);
+            if(w != null) {
+                w.setClient(client);
+            }
+        }
+    }
+            
 }

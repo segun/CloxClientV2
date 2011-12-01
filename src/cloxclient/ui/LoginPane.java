@@ -6,7 +6,7 @@ package cloxclient.ui;
 
 import cloxclient.Client;
 import cloxclient.CloxClient;
-import cloxclient.models.MessageDisparser;
+import cloxclient.helpers.MessageDisparser;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,6 +31,8 @@ public class LoginPane implements EventHandler<ActionEvent> {
     Button loginButton, cancelButton;
     Stage primaryStage;
     Stage loginStage = new Stage();
+    MessageDisparser messageDisparser;
+    ClientsList clientsList;
 
     public LoginPane() {
         this.primaryStage = CloxClient.primaryStage;
@@ -55,7 +57,7 @@ public class LoginPane implements EventHandler<ActionEvent> {
 
         centerPane.add(new Label("Username"), 1, 1);
         centerPane.add((usernameField = new TextField("")), 2, 1);
-        
+
         usernameField.setOnAction(this);
 
         centerPane.add(new Label("Password"), 1, 2);
@@ -79,24 +81,35 @@ public class LoginPane implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent t) {
+
         Button bt = null;
         TextField tf = null;
-        if(t.getSource() instanceof Button) {
+        if (t.getSource() instanceof Button) {
             bt = (Button) t.getSource();
         } else {
             tf = (TextField) t.getSource();
         }
         final LoginPane instance = this;
         if ((bt != null && bt.equals(loginButton)) || tf != null) {
-            final Client client = new Client(usernameField.getText(), null);
+            final Client client = new Client(usernameField.getText(), primaryStage);
             Platform.runLater(new Runnable() {
 
                 @Override
                 public void run() {
                     client.start();
-                    MessageDisparser messageDisparser = new MessageDisparser(primaryStage, client, usernameField.getText());
-                    ClientsList chatList = new ClientsList(usernameField.getText(), client, instance, messageDisparser);
-                    chatList.show();
+                    if (messageDisparser == null) {
+                        messageDisparser = new MessageDisparser(primaryStage, client, usernameField.getText());
+                    } else {
+                        messageDisparser.setClient(client);
+                    }
+
+                    if (clientsList == null) {
+                        clientsList = new ClientsList(usernameField.getText(), client, instance, messageDisparser);
+                    } else {
+                        clientsList.client = client;                        
+                    }
+                    
+                    clientsList.show();
                     loginStage.hide();
                 }
             });
