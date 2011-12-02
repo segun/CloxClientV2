@@ -15,7 +15,9 @@ public class Message {
     private String from;
     private String to;
     private String msg;
-    private Date time;    
+    private Date time;  
+    
+    private boolean isShown;
 
     public String getFrom() {
         return from;
@@ -48,7 +50,14 @@ public class Message {
     public void setTo(String to) {
         this.to = to;
     }
-    
+
+    public boolean isIsShown() {
+        return isShown;
+    }
+
+    public void setIsShown(boolean isShown) {
+        this.isShown = isShown;
+    }    
     
     @Override
     public String toString() {

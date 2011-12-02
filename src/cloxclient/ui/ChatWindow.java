@@ -136,6 +136,7 @@ public class ChatWindow {
     }
 
     private BorderPane constructBorderPaneFromMessage(Message nv) {
+        double currentWidth = chatWindowStage.getWidth();
         BorderPane p = new BorderPane();
         StackPane headerPane = new StackPane();
         InnerShadow innerShadow = new InnerShadow();
@@ -143,9 +144,9 @@ public class ChatWindow {
         innerShadow.setOffsetY(2.0f);
         headerPane.setEffect(innerShadow);
         if (nv.getFrom().equals(me)) {
-            headerPane.getChildren().add(new Rectangle(STAGE_W - 20, 25.0, Color.web("#544504")));
+            headerPane.getChildren().add(new Rectangle(currentWidth - 20, 25.0, Color.web("#544504")));
         } else {
-            headerPane.getChildren().add(new Rectangle(STAGE_W - 20, 25.0, Color.web("#A78732")));
+            headerPane.getChildren().add(new Rectangle(currentWidth - 20, 25.0, Color.web("#A78732")));
         }
 
         BorderPane headerContentPane = new BorderPane();
@@ -163,7 +164,8 @@ public class ChatWindow {
 
 
         Text text = new Text(nv.getMsg());
-        text.setWrappingWidth(STAGE_W - 30);
+        
+        text.setWrappingWidth(chatWindowStage.getWidth() - 20);
 
         p.setTop(headerPane);
         p.setCenter(text);

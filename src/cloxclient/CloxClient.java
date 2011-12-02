@@ -29,7 +29,7 @@ public class CloxClient extends Application {
         CloxClient.primaryStage = primaryStage;
         Scene scene = null;
 
-        Client.host = "localhost";
+        Client.host = "unotifier.com";
         //Client.host = "frontdesk";
         Client.port = 1981;
         

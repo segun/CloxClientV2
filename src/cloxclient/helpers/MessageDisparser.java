@@ -48,19 +48,21 @@ public class MessageDisparser implements ChangeListener<Message[]> {
             @Override
             public void run() {
                 for (Message msg : newValue) {
-                    String chattingWith = msg.getFrom();
-                    if(msg.getFrom().equals(me)) {
-                        chattingWith = msg.getTo();
+                    if (!msg.isIsShown()) {
+                        String chattingWith = msg.getFrom();
+                        if (msg.getFrom().equals(me)) {
+                            chattingWith = msg.getTo();
+                        }
+                        ChatWindow chatWindow = chats.get(chattingWith);
+                        if (chatWindow == null) {
+                            chatWindow = new ChatWindow(primaryState, client, newValue, chattingWith, me);
+                            chats.put(chattingWith, chatWindow);
+                        } else {
+                            chatWindow.setMessages(newValue);
+                        }
+                        msg.setIsShown(true);
+                        chatWindow.show();
                     }
-                    ChatWindow chatWindow = chats.get(chattingWith);
-                    if (chatWindow == null) {
-                        chatWindow = new ChatWindow(primaryState, client, newValue, chattingWith, me);
-                        chats.put(chattingWith, chatWindow);
-                    } else {
-                        chatWindow.setMessages(newValue);
-                    }
-                                                            
-                    chatWindow.show();
                 }
             }
         });
@@ -76,9 +78,9 @@ public class MessageDisparser implements ChangeListener<Message[]> {
 
     public void setClient(Client client) {
         this.client = client;
-        for(String a: chats.keySet()) {
+        for (String a : chats.keySet()) {
             ChatWindow w = chats.get(a);
-            if(w != null) {
+            if (w != null) {
                 w.setClient(client);
             }
         }
@@ -87,5 +89,4 @@ public class MessageDisparser implements ChangeListener<Message[]> {
     public void setMe(String me) {
         this.me = me;
     }
-            
 }
